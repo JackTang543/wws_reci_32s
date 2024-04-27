@@ -22,6 +22,24 @@ void sG2D_SetDot(uint8_t x, uint8_t y, uint8_t dot_en){
     }
 }
 
+bool sG2D_GetDot(uint8_t x, uint8_t y){
+    if ((x >= 128) || (y >= 64)) {
+        return 0; // 坐标超出范围
+    }
+    return (GRAM[x][y / 8] & (1 << (y % 8))) != 0;
+}
+
+
+void sG2D_RevRectArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1){
+    uint8_t x, y;
+    for (y = y0; y <= y1; y++) {
+        for (x = x0; x <= x1; x++) {
+            uint8_t currentDot = sG2D_GetDot(x, y);
+            sG2D_SetDot(x, y, !currentDot);  // 翻转像素状态
+        }
+    }
+}
+
 //写入一竖列(8个点)
 void sG2D_SetByte(uint8_t x, uint8_t y, uint8_t data){
     for(uint8_t i = 0;i < 8;i++){
@@ -130,10 +148,10 @@ uint32_t fps_ts_last;
 uint32_t fps_ts_curr;
 uint32_t fps_prid;
 uint32_t fps_val;
-// uint8_t fps_x = 93;
-// uint8_t fps_y = 57;
-uint8_t fps_x = 87;
-uint8_t fps_y = 57;
+uint8_t fps_x = 92;
+uint8_t fps_y = 56;
+//uint8_t fps_x = 86;
+//uint8_t fps_y = 56;
 
 void sG2D_ShowFPS(){
     // sHMI_OLED_WriteString(fps_x,fps_y,"FPS:");
@@ -156,7 +174,11 @@ void sG2D_UpdateScreen(){
     //fps_ts_curr = HAL_GetTick();
     fps_ts_curr = millis();
     fps_val = 1000 / (fps_ts_curr - fps_ts_last);
+    
+    
+    sG2D_DrawRectangle(fps_x - 1,fps_y - 1 ,128,64,0);
     sG2D_ShowFPS();
+    sG2D_RevRectArea(fps_x - 0,fps_y - 0 ,128,64);
 
     sDRV_GenOLED_UpdateScreen();
 }

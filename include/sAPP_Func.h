@@ -34,15 +34,7 @@
 #define ADC_VOLT_PIN   34
 
 
-typedef struct{
-    float aht10_humi;
-    float aht10_temp;
-    float bmp280_pres;
-    float bmp280_temp;
-    float temt_mv;
-    float vbat;
-    uint16_t status;
-}data_packet_t;
+
 
 
 

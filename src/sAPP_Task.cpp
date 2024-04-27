@@ -1,8 +1,10 @@
 #include "sAPP_Task.h"
+
+#include "sAPP_Menu.h"
 #include "main.h"
 
 Si24R1_Data_t si24r1_data;
-data_packet_t data_packet_p1;
+
 
 TaskHandle_t sAPP_TaskH_2D4GHzISRDataH = NULL;
 
@@ -29,15 +31,39 @@ void sAPP_Task_2D4GHzReciedDataH(void* pvPara){
 
 
 //更新屏幕任务
-void sAPP_Task_UpdateScreen(void* pvParameters){
+void sAPP_Task_UpdateScreen(void* pvPara){
     for(;;){
+        //调用菜单处理函数
+        sAPP_Menu_Handler();
+        //更新屏幕
         sG2D_UpdateScreen();
+        //清空显存
         sG2D_SetAllGRAM(0);
-        vTaskDelay(30 / portTICK_PERIOD_MS);
+        vTaskDelay(20 / portTICK_PERIOD_MS);
     }
 }
 
-void sAPP_Task_BtnHandler(void* pvParameters){
-    
+//按键状态机处理
+void sAPP_Task_BtnHandler(void* pvPara){
+    for(;;){
+        sGBD_Handler();
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+    }
+}
+
+void sAPP_Task_BuzzerHandler(void* pvPara){
+    for(;;){
+        sDRV_BUZZER_Handler();
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+    }
+}
+
+//读取电池电流和电压值
+void sAPP_Task_ReadADC(void* pvPara){
+    for(;;){
+        bat_mv = sAPP_Func_GetVoltMV();
+        bat_ma = sAPP_Func_GetCurrMA();
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
 }
 

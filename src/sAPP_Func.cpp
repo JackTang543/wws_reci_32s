@@ -147,7 +147,40 @@ bool get_lv(uint8_t btn_id){
 }
 
 void trig(uint8_t btn_id,ev_flag_t btn_ev){
-    Serial.printf("btn_id: %d,trig: %d\n",btn_id,btn_ev);
+    if(btn_id == BTN_UP_ID){
+        if(btn_ev == ev_rlsd){
+            page >= 5?page = 1:page++;
+            sDRV_BUZZER_SetPulseTime_ms(300,100);
+        }
+        else if(btn_ev == ev_lp){
+
+        }
+    }
+    else if(btn_id == BTN_DOWN_ID){
+        if(btn_ev == ev_rlsd){
+            page <= 1?page = 5:page--;
+            sDRV_BUZZER_SetPulseTime_ms(300,100);
+        }
+        else if(btn_ev == ev_lp){
+
+        }
+    }
+    else if(btn_id == BTN_ENTER_ID){
+        if(btn_ev == ev_rlsd){
+            y_pos+=12;
+        }
+        else if(btn_ev == ev_lp){
+
+        }
+    }
+    else if(btn_id == BTN_BACK_ID){
+        if(btn_ev == ev_rlsd){
+            y_pos-=12;
+        }
+        else if(btn_ev == ev_lp){
+
+        }
+    }
 }
 
 void sAPP_Func_InitOLED(){
