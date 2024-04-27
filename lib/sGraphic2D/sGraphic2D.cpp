@@ -64,7 +64,7 @@ void sG2D_WriteNumber(uint8_t x,uint8_t y,uint32_t num){
     }
 }
 
-void sG2D_WriteString(uint8_t x,uint8_t y,char* str){
+void sG2D_WriteString(uint8_t x,uint8_t y,const char* str){
     //遍历字符串
     while(*str != '\0'){
         if(x != 128){

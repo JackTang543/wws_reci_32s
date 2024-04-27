@@ -21,9 +21,9 @@ void sAPP_Task_2D4GHzReciedDataH(void* pvPara){
             memcpy(&data_packet_p1,&si24r1_data,sizeof(data_packet_t));
             //dataPacketToJsonString(&packet);
 
-            Serial.printf("AHT10 HUMI: %.1f %%RH,AHT10 TEMP: %.1f degC\n",data_packet_p1.aht10_humi,data_packet_p1.aht10_temp);
-            Serial.printf("BMP280 PRESS: %.3f HPa,BMP280 TEMP: %.2f degC\n",data_packet_p1.bmp280_pres / 100,data_packet_p1.bmp280_temp);
-            Serial.printf("LIGHT:%.2f %%,Vbat:%.2f mV\n",data_packet_p1.temt_mv,data_packet_p1.vbat);
+            // Serial.printf("AHT10 HUMI: %.1f %%RH,AHT10 TEMP: %.1f degC\n",data_packet_p1.aht10_humi,data_packet_p1.aht10_temp);
+            // Serial.printf("BMP280 PRESS: %.3f HPa,BMP280 TEMP: %.2f degC\n",data_packet_p1.bmp280_pres / 100,data_packet_p1.bmp280_temp);
+            // Serial.printf("LIGHT:%.2f %%,Vbat:%.2f mV\n",data_packet_p1.temt_mv,data_packet_p1.vbat);
         }
 
     }
@@ -37,8 +37,8 @@ void sAPP_Task_UpdateScreen(void* pvPara){
         sAPP_Menu_Handler();
         //更新屏幕
         sG2D_UpdateScreen();
-        //清空显存
-        sG2D_SetAllGRAM(0);
+        // //清空显存
+        // sG2D_SetAllGRAM(0);
         vTaskDelay(20 / portTICK_PERIOD_MS);
     }
 }
@@ -51,9 +51,11 @@ void sAPP_Task_BtnHandler(void* pvPara){
     }
 }
 
+//! 用于cot menu
 void sAPP_Task_BuzzerHandler(void* pvPara){
     for(;;){
-        sDRV_BUZZER_Handler();
+        //sDRV_BUZZER_Handler();
+        
         vTaskDelay(50 / portTICK_PERIOD_MS);
     }
 }

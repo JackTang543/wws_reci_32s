@@ -21,6 +21,9 @@
 #include "sAPP_Task.h"
 #include "sDRV_Buzzer.h"
 
+#include "cot_menu.h"
+#include "sAPP_Menu.h"
+
 
 typedef struct{
     float aht10_humi;
@@ -47,6 +50,10 @@ extern data_packet_t data_packet_p1;
 extern uint32_t page;
 
 extern int16_t y_pos;
+
+
+extern char* WiFi_SSID;
+extern char* WiFi_PWD;
 
 
 

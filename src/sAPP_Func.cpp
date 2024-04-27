@@ -150,7 +150,8 @@ void trig(uint8_t btn_id,ev_flag_t btn_ev){
     if(btn_id == BTN_UP_ID){
         if(btn_ev == ev_rlsd){
             page >= 5?page = 1:page++;
-            sDRV_BUZZER_SetPulseTime_ms(300,100);
+            //sDRV_BUZZER_SetPulseTime_ms(300,100);
+            cotMenu_SelectPrevious(1);
         }
         else if(btn_ev == ev_lp){
 
@@ -158,8 +159,10 @@ void trig(uint8_t btn_id,ev_flag_t btn_ev){
     }
     else if(btn_id == BTN_DOWN_ID){
         if(btn_ev == ev_rlsd){
-            page <= 1?page = 5:page--;
-            sDRV_BUZZER_SetPulseTime_ms(300,100);
+            //page <= 1?page = 5:page--;
+            //sDRV_BUZZER_SetPulseTime_ms(300,100);
+            cotMenu_SelectNext(1);
+            
         }
         else if(btn_ev == ev_lp){
 
@@ -167,7 +170,9 @@ void trig(uint8_t btn_id,ev_flag_t btn_ev){
     }
     else if(btn_id == BTN_ENTER_ID){
         if(btn_ev == ev_rlsd){
-            y_pos+=12;
+            //y_pos+=12;
+            cotMenu_Enter();
+            
         }
         else if(btn_ev == ev_lp){
 
@@ -175,7 +180,9 @@ void trig(uint8_t btn_id,ev_flag_t btn_ev){
     }
     else if(btn_id == BTN_BACK_ID){
         if(btn_ev == ev_rlsd){
-            y_pos-=12;
+            //y_pos-=12;
+            cotMenu_Exit(1);
+            
         }
         else if(btn_ev == ev_lp){
 

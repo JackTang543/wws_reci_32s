@@ -16,7 +16,7 @@ void sG2D_RevRectArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 
 void sG2D_SetByte(uint8_t x, uint8_t y, uint8_t data);
 void sG2D_WriteNumber(uint8_t x,uint8_t y,uint32_t num);
-void sG2D_WriteString(uint8_t x,uint8_t y,char* str);
+void sG2D_WriteString(uint8_t x,uint8_t y,const char* str);
 void sG2D_DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t dot_en);
 void sG2D_DrawVLine(uint8_t x, uint8_t y0, uint8_t y1, uint8_t dot_en);
 void sG2D_DrawHLine(uint8_t x0, uint8_t x1,uint8_t y, uint8_t dot_en);

@@ -13,12 +13,12 @@ data_packet_t data_packet_p1;
 uint32_t page = 1;
 
 
-const char* ssid = "9607a";
-const char* password = "960796079607";
-
+char* WiFi_SSID = (char*)"9607a";
+char* WiFi_PWD  = (char*)"960796079607";
 
 const char* host = "192.168.1.116";
 const uint16_t port = 8090;
+
 
 
 
@@ -33,27 +33,21 @@ void setup() {
     // sAPP_Func_InitWS2812();
     sAPP_Func_Init2D4GHz();
     sAPP_Func_ADCInit();
-    sDRV_BUZZER_Init();
+    //sDRV_BUZZER_Init();
+
+    sAPP_Menu_Init();
 
 
     // sDRV_BUZZER_SetFreq(1000);
     // sDRV_BUZZER_SetDuty(50);
 
-    sDRV_BUZZER_SetMode(BUZZER_MODE_PULSE_SINGLE);
-    sDRV_BUZZER_SetFreq(1000);
-    sDRV_BUZZER_SetVolume(50);
-    sDRV_BUZZER_SetDuty(0);
+    // sDRV_BUZZER_SetMode(BUZZER_MODE_PULSE_SINGLE);
+    // sDRV_BUZZER_SetFreq(1000);
+    // sDRV_BUZZER_SetVolume(50);
+    // sDRV_BUZZER_SetDuty(0);
 
-    
-    
+    WiFi.begin(WiFi_SSID,WiFi_PWD);
 
-    // ledcSetup(LEDC_CHANNEL, LEDC_FREQUENCY, LEDC_RESOLUTION);
-    // //将PWM信号绑定到GPIO
-    // ledcAttachPin(LED_PIN, LEDC_CHANNEL);
-    // ledcWrite(LEDC_CHANNEL, 50);
-
-    //sDRV_BUZZER_SetMode(BUZZER_MODE_ADJ_VOLUME);
-    //sDRV_BUZZER_SetVolume(100);
 
     // sAPP_Func_SetWS2812Brightness(5);
     // sAPP_Func_SetWS2812();
@@ -76,7 +70,7 @@ void setup() {
     //按键状态机处理任务
     xTaskCreate(sAPP_Task_BtnHandler,"BtnHandler",2048,NULL,1,NULL);
     //BUZZER处理任务
-    xTaskCreate(sAPP_Task_BuzzerHandler,"BuzzerHandler",1048,NULL,1,NULL);
+    xTaskCreate(sAPP_Task_BuzzerHandler,"BuzzerHandler",4096,NULL,1,NULL);
     //ADC采样读取电池电压电流任务
     xTaskCreate(sAPP_Task_ReadADC,"ReadADC",1024,NULL,1,NULL);
     
