@@ -7,6 +7,7 @@
 #include "cJSON.h"
 #include <SPI.h>
 
+#include "main.h"
 
 #include "Freenove_WS2812_Lib_for_ESP32.h"
 

@@ -292,19 +292,19 @@ static void init_conf(Si24R1_Conf_t* conf){
 }
 
 //中断处理函数
-void sDRV_Si24R1_IrqHandler(){
-    Serial.printf("IRQ!\n");
+void IRAM_ATTR sDRV_Si24R1_IrqHandler(){
+    //Serial.printf("IRQ!\n");
     if(oper_reg(__COMM_R_REG(ADDR_STATUS),STATUS_MSK_TX_DS,OPER_GET_REG)){
         //检测到发射完成中断,清除标志位
         oper_reg(__COMM_W_REG(ADDR_STATUS),STATUS_MSK_TX_DS,OPER_SET_REG);
         tran_cplt_flag = 1;
 
-        Serial.printf("Tran cplt!\n");
+        //Serial.printf("Tran cplt!\n");
     }
     else if(oper_reg(__COMM_R_REG(ADDR_STATUS),STATUS_MSK_RX_DR,OPER_GET_REG)){
         //检测到接收完成中断
         oper_reg(__COMM_W_REG(ADDR_STATUS),STATUS_MSK_RX_DR,OPER_SET_REG);
-        Serial.printf("Reci cplt!\n");
+        //Serial.printf("Reci cplt!\n");
         //读取数据长度
         setCS(0);
         sendByte(COMM_R_RX_PL_WID);
@@ -334,7 +334,7 @@ void sDRV_Si24R1_IrqHandler(){
     else if(oper_reg(__COMM_R_REG(ADDR_STATUS),STATUS_MSK_MAX_RT,OPER_GET_REG)){
         //检测到最大重发次数中断
         oper_reg(__COMM_W_REG(ADDR_STATUS),STATUS_MSK_MAX_RT,OPER_SET_REG);
-        Serial.printf("Max re-tran!\n");
+        //Serial.printf("Max re-tran!\n");
     }
 }
 

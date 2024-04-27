@@ -156,7 +156,7 @@ void sG2D_UpdateScreen(){
     //fps_ts_curr = HAL_GetTick();
     fps_ts_curr = millis();
     fps_val = 1000 / (fps_ts_curr - fps_ts_last);
-    //sG2D_ShowFPS();
+    sG2D_ShowFPS();
 
     sDRV_GenOLED_UpdateScreen();
 }

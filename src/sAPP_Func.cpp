@@ -1,16 +1,13 @@
 #include "sAPP_Func.h"
+#include "sAPP_Task.h"
 
 
 
-
-
-
-data_packet_t packet;
+data_packet_t reci_data_temp;
 
 
 Freenove_ESP32_WS2812 ws2812 = Freenove_ESP32_WS2812(WS2812_COUNT, WS2812_PIN, WS2812_CH, TYPE_GRB);
 
-uint8_t rx_flag;
 
 
 String dataPacketToJsonString(const data_packet_t* packet) {
@@ -50,12 +47,25 @@ float sAPP_Func_GetCurrMA(){
     //return ((float)analogRead(ADC_CURR_PIN) / 4095.0f) * 3300.0f - 1100.0f;
     return (float)analogReadMilliVolts(ADC_CURR_PIN) - 1100.0f;
 }
-    
 
-void recied_data(Si24R1_Data_t* data){
+Si24R1_Data_t si24r1_data_temp;
+Si24R1_Data_t* si24r1_data_temp_p;
+
+//IRQ:2.4Ghz接收到数据回调,在这里发送一个消息队列给数据处理任务
+void IRAM_ATTR sAPP_Func_ISR_2D4ReciedData(Si24R1_Data_t* data){
     //Serial.printf("recied data:\"%s\",len:%d,ppp:%d,rssi:%d\n",data->msg,data->len,data->ppp,data->rssi);
-    memcpy(&packet,data,sizeof(data_packet_t));
-    rx_flag = 1;
+    //先缓存一下数据
+    memcpy(&si24r1_data_temp,data,sizeof(Si24R1_Data_t));
+    //更新一下指针
+    si24r1_data_temp_p = &si24r1_data_temp;
+    //用于检查是否要唤醒更高优先级的任务
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    //把数据指针推入队列,这里的数据指针其实是2级指针
+    xQueueSendFromISR(si24r1_data_queue, &si24r1_data_temp_p, &xHigherPriorityTaskWoken);
+    //检查是否需要立即切换任务
+    if(xHigherPriorityTaskWoken == pdTRUE){
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
 }
 
 
@@ -68,46 +78,33 @@ void sAPP_Func_DataHandler(){
     sG2D_DrawHLine(0,127,8,1);
     static char buffer[32]; // 足够大的缓冲区来存储格式化的字符串
 
-    // 显示温度
-    snprintf(buffer, sizeof(buffer), "TEMP:  %.1f", packet.aht10_temp);
-    sG2D_WriteString(10, 15, buffer);
-    sG2D_WriteString(100,15,"degC");
+    // // 显示温度
+    // snprintf(buffer, sizeof(buffer), "TEMP:  %.1f", packet.aht10_temp);
+    // sG2D_WriteString(10, 15, buffer);
+    // sG2D_WriteString(100,15,"degC");
 
-    // 显示湿度
-    snprintf(buffer, sizeof(buffer), "HUMI:  %.1f", packet.aht10_humi);
-    sG2D_WriteString(10, 25, buffer);
-    sG2D_WriteString(100,25,"%RH");
+    // // 显示湿度
+    // snprintf(buffer, sizeof(buffer), "HUMI:  %.1f", packet.aht10_humi);
+    // sG2D_WriteString(10, 25, buffer);
+    // sG2D_WriteString(100,25,"%RH");
 
-    // 显示气压（转换为百帕斯卡）
-    snprintf(buffer, sizeof(buffer), "PRES:  %.2f", packet.bmp280_pres);
-    sG2D_WriteString(10, 35, buffer);
-    sG2D_WriteString(100,35,"HPa");
+    // // 显示气压（转换为百帕斯卡）
+    // snprintf(buffer, sizeof(buffer), "PRES:  %.2f", packet.bmp280_pres);
+    // sG2D_WriteString(10, 35, buffer);
+    // sG2D_WriteString(100,35,"HPa");
 
-    // 显示光照
-    snprintf(buffer, sizeof(buffer), "LIGHT: %.2f", packet.temt_mv); // 假设光照单位为Lux，且整数足够
-    sG2D_WriteString(10, 45, buffer);
-    sG2D_WriteString(100,45,"%");
+    // // 显示光照
+    // snprintf(buffer, sizeof(buffer), "LIGHT: %.2f", packet.temt_mv); // 假设光照单位为Lux，且整数足够
+    // sG2D_WriteString(10, 45, buffer);
+    // sG2D_WriteString(100,45,"%");
 
-    snprintf(buffer, sizeof(buffer), "%4.0fmV", sAPP_Func_GetVoltMV());
-    sG2D_WriteString(10, 55, buffer);
+    // snprintf(buffer, sizeof(buffer), "%4.0fmV", sAPP_Func_GetVoltMV());
+    // sG2D_WriteString(10, 55, buffer);
 
-    snprintf(buffer, sizeof(buffer), "%4.0fmA", sAPP_Func_GetCurrMA());
-    sG2D_WriteString(70, 55, buffer);
-
-    if(rx_flag){
-        rx_flag = 0;
-
-        dataPacketToJsonString(&packet);
+    // snprintf(buffer, sizeof(buffer), "%4.0fmA", sAPP_Func_GetCurrMA());
+    // sG2D_WriteString(70, 55, buffer);
 
         
-
-
-        
-
-
-        Serial.printf("AHT10 HUMI: %.1f %%RH,AHT10 TEMP: %.1f degC\n",packet.aht10_humi,packet.aht10_temp);
-        Serial.printf("BMP280 PRESS: %.3f HPa,BMP280 TEMP: %.2f degC\n",packet.bmp280_pres / 100,packet.bmp280_temp);
-        Serial.printf("LIGHT:%.2f %%,Vbat:%.2f mV\n",packet.temt_mv,packet.vbat);
 
         // if (!client.connect(host, port)) {
         //     Serial.println("Connection failed.");
@@ -131,7 +128,6 @@ void sAPP_Func_DataHandler(){
         // udp.print(dataPacketToJsonString(&packet)); // 发送 JSON 数据
         // udp.endPacket(); // 完成发送
 
-    }
 }
 
 bool get_lv(uint8_t btn_id){
@@ -252,7 +248,7 @@ void sAPP_Func_Init2D4GHz(){
                        EN_RXADDR_MSK_ERX_P2 | EN_RXADDR_MSK_ERX_P0 | EN_RXADDR_MSK_ERX_P0;
     si24r1.irq_msk = 0;
 
-    sDRV_Si24R1_Init(&si24r1,recied_data);
+    sDRV_Si24R1_Init(&si24r1,sAPP_Func_ISR_2D4ReciedData);
 
     sDRV_Si24R1_SetStandby();
 

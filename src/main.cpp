@@ -1,19 +1,7 @@
-#include <Arduino.h>
+#include "main.h"
 
 
-#include "sAPP_Func.h"
-
-#include "sGraphic2D.h"
-
-#include "sAPP_Task.h"
-
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WiFiUdp.h>
-#include <WiFi.h>
-
-#include "sBSP_SPI.h"
-
+QueueHandle_t si24r1_data_queue;
 
 
 const char* ssid = "9607a";
@@ -28,65 +16,83 @@ const uint16_t port = 8090;
 #define LEDC_FREQUENCY 100  // PWM频率为5000Hz
 #define LEDC_RESOLUTION 8    // 分辨率为8位
 
-#include <list>
+void task1(void *pvParameters) {
+  while (1) {
+    Serial.println("Task 1 is running...");
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+  }
+}
 
-using namespace std;
+void task2(void *pvParameters) {
+  while (1) {
+    Serial.println("Task 2 is running...");
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+  }
+}
 
-list<int> mylist;
+// void setup() {
+//   Serial.begin(115200);
+
+//   xTaskCreate(task1, "Task1", 1024, NULL, 1, NULL);
+//   xTaskCreate(task2, "Task2", 1024, NULL, 1, NULL);
+// }
+
+// void loop() {
+//   // 什么都不做
+// }
+
 
 void setup() {
     Serial.begin(115200);
     Serial.printf("Hello,ESP32\n");
 
     sAPP_Func_InitOLED();
-    sAPP_Func_InitBtns();
-    sAPP_Func_InitWS2812();
+    // sAPP_Func_InitBtns();
+    // sAPP_Func_InitWS2812();
     sAPP_Func_Init2D4GHz();
-    sAPP_Func_ADCInit();
+    // sAPP_Func_ADCInit();
+
+    // sAPP_Func_SetWS2812Brightness(5);
+    // sAPP_Func_SetWS2812();
 
 
+   si24r1_data_queue = xQueueCreate(1,sizeof(Si24R1_Data_t*));
 
-    sAPP_Func_SetWS2812Brightness(5);
 
-    // WiFi.begin(ssid, password);
-    // while (WiFi.status() != WL_CONNECTED) {
-    //     delay(1000);
-    //     Serial.println("Connecting to WiFi...");
-    // }
-    // Serial.println("Connected to WiFi\n");
-
-    // Serial.printf("My IP:%s\n",WiFi.localIP().toString());
-    
-    
-    sAPP_Func_SetWS2812();
-
-    mylist.push_back(1);
-    mylist.push_back(5);
-    mylist.push_back(10);
-
-    for(int val : mylist){
-        Serial.println(val);
+    if(si24r1_data_queue == NULL){
+        while(1){
+            Serial.printf("QUEUE ERROR\n");
+        }
     }
 
+
+    //2.4GHz接收到数据处理任务
+    xTaskCreate(sAPP_Task_2D4GHzReciedDataH,"2D4GHzISRDataH",2048,NULL,1,&sAPP_TaskH_2D4GHzISRDataH);
+    //刷新屏幕任务
+    xTaskCreate(sAPP_Task_UpdateScreen,"UpdateScreen",2048,NULL,1,NULL);
+
+    
 
  // 初始化PWM
 //   ledcSetup(LEDC_CHANNEL, LEDC_FREQUENCY, LEDC_RESOLUTION);
    // 将PWM信号绑定到GPIO
 //   ledcAttachPin(LED_PIN, LEDC_CHANNEL);
 //   ledcWrite(LEDC_CHANNEL, 50);
-    
+
+
+    //! 千万不要调用vTaskStartScheduler();
 }
 
 
 void loop() {
-    sG2D_SetAllGRAM(0);
+    // sG2D_SetAllGRAM(0);
     
-    // // sGBD_Handler();
+    // sGBD_Handler();
     
-    sAPP_Func_DataHandler();
+    //sAPP_Func_DataHandler();
 
 
-    sG2D_UpdateScreen();
+    // sG2D_UpdateScreen();
 
-    delay(100);
+    //delay(100);
 }
