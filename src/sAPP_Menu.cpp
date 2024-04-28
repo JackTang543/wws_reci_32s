@@ -119,7 +119,7 @@ MenuList_t WiFiInfoPageItem[] = {
     {"IP  :", NULL, NULL, NULL, NULL, NULL},
     {"MAC :", NULL, NULL, NULL, NULL, NULL},
     {"SSID:", NULL, NULL, NULL, NULL, NULL},
-    {"PWR:", NULL, NULL, NULL, NULL, NULL},
+    {"PWD :", NULL, NULL, NULL, NULL, NULL},
     {"CH  :", NULL, NULL, NULL, NULL, NULL},
     {"gwIP:", NULL, NULL, NULL, NULL, NULL}
 };
@@ -197,7 +197,7 @@ void ShowWiFiInfoMenu(MenuShow_t *ptS){
     //CHANNEL
     char ch[20] = "";
     if(WiFi.isConnected()){
-        snprintf(ch,20,"       CH%d",WiFi.channel());
+        snprintf(ch,20,"            CH%02d",WiFi.channel());
         ptS->pItemsExData[6] = (void*)ch;
     }else{
         ptS->pItemsExData[6] = (void*)"             NaN";

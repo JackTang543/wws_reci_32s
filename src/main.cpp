@@ -46,7 +46,7 @@ void setup() {
     // sDRV_BUZZER_SetVolume(50);
     // sDRV_BUZZER_SetDuty(0);
 
-    WiFi.begin(WiFi_SSID,WiFi_PWD);
+    //WiFi.begin(WiFi_SSID,WiFi_PWD);
 
 
     // sAPP_Func_SetWS2812Brightness(5);

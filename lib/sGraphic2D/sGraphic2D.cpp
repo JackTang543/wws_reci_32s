@@ -176,9 +176,9 @@ void sG2D_UpdateScreen(){
     fps_val = 1000 / (fps_ts_curr - fps_ts_last);
     
     
-    sG2D_DrawRectangle(fps_x - 1,fps_y - 1 ,128,64,0);
-    sG2D_ShowFPS();
-    sG2D_RevRectArea(fps_x - 0,fps_y - 0 ,128,64);
+    //sG2D_DrawRectangle(fps_x - 1,fps_y - 1 ,128,64,0);
+    //sG2D_ShowFPS();
+    //sG2D_RevRectArea(fps_x - 0,fps_y - 0 ,128,64);
 
     sDRV_GenOLED_UpdateScreen();
 }
