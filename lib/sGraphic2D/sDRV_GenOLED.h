@@ -19,8 +19,6 @@ void sDRV_GenOLED_SetShowEN(uint8_t is_show);
 void sDRV_GenOLED_SetDisRev(uint8_t is_reverse);
 void sDRV_GenOLED_SetHorizontalFlip(uint8_t is_flip);
 void sDRV_GenOLED_SetVerticalFlip(uint8_t is_flip);
-
-void sDRV_GenOLED_SetBrightness(uint8_t bl);
 void sDRV_GenOLED_UpdateScreen();
 
 

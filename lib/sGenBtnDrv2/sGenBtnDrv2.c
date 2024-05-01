@@ -59,6 +59,9 @@
  * By Sightseer. in home. 2024.01.31
  */
 
+
+//v2.1 修复btn_init.lp_loop_pridt长按触发写错了的问题
+
 #include "sGenBtnDrv2.h"
 
 
@@ -216,7 +219,8 @@ bool cdtn_check(uint8_t id,cdtn_t cdtn){
                 //记录第一次按下的时间戳
                 btn[id].t_press = btn_tick_func_f();
                 //记录下一次触发loop的时间点
-                btn[id].t_next_loop = btn[id].t_press + btn[id].lp_loop_pridt;
+                //btn[id].t_next_loop = btn[id].t_press + btn[id].lp_loop_pridt;
+                btn[id].t_next_loop = btn[id].t_press + btn[id].lp_trig_waitt;
                 return true;
             }else{
                 return false;

@@ -15,6 +15,8 @@
  * 
  */
 
+//伽马矫正值
+#define GAMMA_VAL 2.2f
 
 //默认使用I2C通信,启用这个宏来使用4线SPI通信
 #define USE_4WSPI
@@ -178,6 +180,16 @@
 #endif
 
 
+//伽马校正
+static float gamma_correction(float percent_brightness) {
+    //将输入的亮度百分比转换为0到1之间的范围
+    float normalized_brightness = percent_brightness / 100.0;
+    //应用伽马校正公式
+    float corrected_brightness = pow(normalized_brightness, GAMMA_VAL);
+    //将校正后的亮度映射回PWM占空比范围
+    float pwm_duty_cycle = corrected_brightness * 100.0;
+    return pwm_duty_cycle;
+}
 
 
 //******************************************接口****************************************
@@ -381,7 +393,8 @@ int8_t sDRV_GenOLED_Init(){
 }
 
 void sDRV_GenOLED_SetBrightness(uint8_t bl){
-    write_comm2b(__COMM_CONTRAST_CTRL_MODE_SET,__COMM_CONTRAST_DATA_SET(bl));
+    uint8_t val = gamma_correction((float)bl) * 2.55f;
+    write_comm2b(__COMM_CONTRAST_CTRL_MODE_SET,__COMM_CONTRAST_DATA_SET(val));
 }
 
 void sDRV_GenOLED_SetShowEN(uint8_t is_show){

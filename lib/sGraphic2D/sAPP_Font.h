@@ -15,6 +15,30 @@ typedef struct{
     uint8_t CharByte4;
 }sCGRAM_Char_t;
 
+extern const unsigned char sAPP_Font_8x8Icon_2D4Full[];
+extern const unsigned char sAPP_Font_8x8Icon_2D4Half[];
+extern const unsigned char sAPP_Font_8x8Icon_Wifi[];
+extern const unsigned char sAPP_Font_8x8Icon_degC[];
+extern const unsigned char sAPP_Font_8x8Icon_Bat0[];
+extern const unsigned char sAPP_Font_8x8Icon_Bat1[];
+extern const unsigned char sAPP_Font_8x8Icon_Bat2[];
+extern const unsigned char sAPP_Font_8x8Icon_Bat3[];
+
+extern const unsigned char sAPP_Font_Img_WifiInfo[];
+extern const unsigned char sAPP_Font_Img_2D4GhzInfo[];
+extern const unsigned char sAPP_Font_Img_2D4GhzSettings[];
+extern const unsigned char sAPP_Font_Img_WiFiSettings[];
+extern const unsigned char sAPP_Font_Img_Settings[];
+extern const unsigned char sAPP_Font_Img_StartPage[];
+extern const unsigned char sAPP_Font_Img_MainPage[];
+extern const unsigned char sAPP_Font_Img_ScrrenBrightness[];
+extern const unsigned char sAPP_Font_Img_ScrrenSleepTime[];
+extern const unsigned char sAPP_Font_Img_WiFiConnected[];
+extern const unsigned char sAPP_Font_Img_WiFiDisconnect[];
+extern const unsigned char sAPP_Font_Img_SyncNTPTime[];
+extern const unsigned char sAPP_Font_Img_WiFiConnecting[];
+
+
 /* 
 *  sAPP_Font.h
 *  这是一个字库

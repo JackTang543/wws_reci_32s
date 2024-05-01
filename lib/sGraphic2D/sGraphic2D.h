@@ -14,6 +14,9 @@ void sG2D_SetDot(uint8_t x, uint8_t y, uint8_t dot_en);
 bool sG2D_GetDot(uint8_t x, uint8_t y);
 void sG2D_RevRectArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 
+void sG2D_Draw8x8Icon(uint8_t x, uint8_t y,const uint8_t* icon);
+void sG2D_DrawScreenByImg(const uint8_t* img);
+
 void sG2D_SetByte(uint8_t x, uint8_t y, uint8_t data);
 void sG2D_WriteNumber(uint8_t x,uint8_t y,uint32_t num);
 void sG2D_WriteString(uint8_t x,uint8_t y,const char* str);

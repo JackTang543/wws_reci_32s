@@ -41,7 +41,7 @@ static void init_gpio(){
     digitalWrite(CE_PIN,LOW);
     //IRQ,上拉,低电平有效
     pinMode(IRQ_PIN,INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(IRQ_PIN),sDRV_Si24R1_IrqHandler,FALLING);
+    
 }
 /*@brief  对寄存器进行操作
 *
@@ -328,6 +328,7 @@ void IRAM_ATTR sDRV_Si24R1_IrqHandler(){
         reciBytes(data.msg,data.len);
         setCS(1);
 
+
         //调用用户函数
         reci_data_cb(&data);
     }
@@ -500,10 +501,13 @@ void sDRV_Si24R1_Init(Si24R1_Conf_t* init_conf_struct,reci_data_cb_t reci_cb){
         reci_data_cb = reci_cb;
     }
 
-
+    
     init_conf(init_conf_struct);
 
     sDRV_Si24R1_IrqHandler();
+
+
+    attachInterrupt(digitalPinToInterrupt(IRQ_PIN),sDRV_Si24R1_IrqHandler,FALLING);
 }
 
 

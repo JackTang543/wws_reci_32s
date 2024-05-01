@@ -3,29 +3,27 @@
 #include "sAPP_Menu.h"
 #include "main.h"
 
-Si24R1_Data_t si24r1_data;
 
 
-TaskHandle_t sAPP_TaskH_2D4GHzISRDataH = NULL;
 
 
-//2.4Ghz接收到数据处理任务
+
+/**
+ * @brief 2.4Ghz接收到数据的处理任务
+ */
 void sAPP_Task_2D4GHzReciedDataH(void* pvPara){
-    Si24R1_Data_t* pData = NULL;
+    Si24R1_Data_t si24r1_data;
     for(;;){
         //如果队列有数据
-        if(xQueueReceive(si24r1_data_queue, &pData, portMAX_DELAY) == pdPASS) {
-            //把数据复制过来
-            memcpy(&si24r1_data,pData,sizeof(Si24R1_Data_t));
+        if(xQueueReceive(g_si24r1_data_queue, &si24r1_data, portMAX_DELAY) == pdPASS) {
             //然后把数据变成特定的格式
-            memcpy(&data_packet_p1,&si24r1_data,sizeof(data_packet_t));
-            //dataPacketToJsonString(&packet);
+            memcpy(&g_data_packet_p1,&si24r1_data,sizeof(data_packet_t));
 
             // Serial.printf("AHT10 HUMI: %.1f %%RH,AHT10 TEMP: %.1f degC\n",data_packet_p1.aht10_humi,data_packet_p1.aht10_temp);
             // Serial.printf("BMP280 PRESS: %.3f HPa,BMP280 TEMP: %.2f degC\n",data_packet_p1.bmp280_pres / 100,data_packet_p1.bmp280_temp);
             // Serial.printf("LIGHT:%.2f %%,Vbat:%.2f mV\n",data_packet_p1.temt_mv,data_packet_p1.vbat);
         }
-
+        vTaskDelay(50 / portTICK_PERIOD_MS);
     }
 }
 
@@ -66,6 +64,14 @@ void sAPP_Task_ReadADC(void* pvPara){
         bat_mv = sAPP_Func_GetVoltMV();
         bat_ma = sAPP_Func_GetCurrMA();
         vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+
+void sAPP_Task_TIM_SyncTimeByNTP(TimerHandle_t xTimer){
+    //通过NTP服务器同步时间
+    if(WiFi.isConnected()){
+        //GMT+8 中国北京
+        configTime(3600 * 8,0,"ntp.ntsc.ac.cn");
     }
 }
 

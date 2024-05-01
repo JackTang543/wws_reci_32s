@@ -49,6 +49,20 @@ void sG2D_SetByte(uint8_t x, uint8_t y, uint8_t data){
     }
 }
 
+void sG2D_Draw8x8Icon(uint8_t x, uint8_t y,const uint8_t* icon){
+    for(uint8_t _x = x;_x < x + 8;_x++){
+        sG2D_SetByte(_x, y,icon[_x - x]);
+    }
+}
+
+void sG2D_DrawScreenByImg(const uint8_t* img){
+    for(uint8_t y = 0;y < 8;y++){
+        for(uint8_t x = 0;x < 128;x++){
+            GRAM[x][y] = img[x + 128 * y];
+        }
+    }
+}
+
 static void WriteUserChar(uint8_t x,uint8_t y,sCGRAM_Char_t user_char){
     sG2D_SetByte(x + 1,y,user_char.CharByte0);
     sG2D_SetByte(x + 2,y,user_char.CharByte1);
@@ -138,7 +152,7 @@ void sG2D_DrawRectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t 
         sG2D_DrawHLine(x0, x1, y0, 1);
         sG2D_DrawHLine(x0, x1, y1, 1);
         sG2D_DrawVLine(x0, y0, y1, 1);
-        sG2D_DrawVLine(x1, y0, y1, 1);
+        sG2D_DrawVLine(x1, y0, y1 + 1, 1);
     }
 }
 

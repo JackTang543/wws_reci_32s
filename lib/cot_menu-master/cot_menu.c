@@ -335,9 +335,13 @@ int cotMenu_Enter(void)
 
     //! 2024.04.28 SIG新增:检查是否有子菜单可供进入,避免这一级没有菜单选项但是还是进入了导致的访问NULL内存问题
     if (pCurrMenuCtrl->pMenuList == NULL ||
-        pCurrMenuCtrl->pMenuList[pCurrMenuCtrl->selectItem].pfnLoadCallFun == NULL) {
+        pCurrMenuCtrl->pMenuList[pCurrMenuCtrl->selectItem].pfnEnterCallFun == NULL) {
         return -1;
     }
+
+    // if (pCurrMenuCtrl->pMenuList == NULL) {
+    //     return -1;
+    // }
 
     for (i = 0; i < MENU_SUPPORT_LANGUAGE; i++)
     {

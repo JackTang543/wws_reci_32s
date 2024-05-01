@@ -1,15 +1,32 @@
 #include "main.h"
 
 
-QueueHandle_t si24r1_data_queue;
-QueueHandle_t btn_ev_data_queue;
+
+
+
+//Si24R1的数据消息队列,用于sAPP_2D4GHz到任务sAPP_Task_2D4GHzReciedDataH之间的通信
+QueueHandle_t g_si24r1_data_queue;
+//sGBD2->sAPP_Menu的按键事件队列
+QueueHandle_t g_sgbd2_ev_mq;
+//sAPP_Menu->sGBD2的item选中通知消息队列
+// QueueHandle_t g_sapp_menu_item_selected_mq;
+
+//sAPP_Menu->sGBD2的item选中的二值信号量
+SemaphoreHandle_t g_sapp_menu_item_selected_sem;
+//sAPP_Menu->sGBD2的item退出选中的二值信号量
+SemaphoreHandle_t g_sapp_menu_item_unselect_sem;
+
+//2.4G接收到并解析好的数据
+data_packet_t g_data_packet_p1;
+
 float bat_mv;
 float bat_ma;
 
-int16_t y_pos;
+
+Si24R1_Data_t si24r1_data_p1;
+Si24R1_Conf_t g_si24r1_conf;
 
 
-data_packet_t data_packet_p1;
 uint32_t page = 1;
 
 
@@ -22,6 +39,7 @@ const uint16_t port = 8090;
 
 
 
+TimerHandle_t  SyncTimer;
 
 
 void setup() {
@@ -29,13 +47,28 @@ void setup() {
     Serial.printf("Hello,ESP32\n");
 
     sAPP_Func_InitOLED();
-    sAPP_Func_InitBtns();
+    sG2D_DrawScreenByImg(sAPP_Font_Img_StartPage);
+    sG2D_UpdateScreen();
+    delay(1000);
+
+    // WiFi.begin(WiFi_SSID, WiFi_PWD);
+    // while (WiFi.status()!= WL_CONNECTED) {
+    //     delay(500);
+    // }
+
+    sG2D_SetAllGRAM(0);
+
+    sAPP_Btns_Init();
     // sAPP_Func_InitWS2812();
     sAPP_Func_Init2D4GHz();
     sAPP_Func_ADCInit();
     //sDRV_BUZZER_Init();
+    sAPP_Func_RTC_Init();
 
     sAPP_Menu_Init();
+
+    
+
 
 
     // sDRV_BUZZER_SetFreq(1000);
@@ -53,30 +86,41 @@ void setup() {
     // sAPP_Func_SetWS2812();
 
 
-   si24r1_data_queue = xQueueCreate(1,sizeof(Si24R1_Data_t*));
+    //消息队列只有一个元素
+    g_si24r1_data_queue = xQueueCreate(1,sizeof(Si24R1_Data_t));
 
+    g_sgbd2_ev_mq = xQueueCreate(1,sizeof(sAPP_Btns_Event_t));
+    g_sapp_menu_item_selected_sem = xSemaphoreCreateBinary();
+    g_sapp_menu_item_unselect_sem = xSemaphoreCreateBinary();
 
-    if(si24r1_data_queue == NULL){
+    if(g_si24r1_data_queue == NULL){
         while(1){
             Serial.printf("QUEUE ERROR\n");
         }
     }
-
-
-    //2.4GHz接收到数据处理任务
-    xTaskCreate(sAPP_Task_2D4GHzReciedDataH,"2D4GHzISRDataH",2048,NULL,3,&sAPP_TaskH_2D4GHzISRDataH);
-    //刷新屏幕任务
-    xTaskCreate(sAPP_Task_UpdateScreen,"UpdateScreen",2048,NULL,1,NULL);
-    //按键状态机处理任务
-    xTaskCreate(sAPP_Task_BtnHandler,"BtnHandler",2048,NULL,1,NULL);
-    //BUZZER处理任务
-    xTaskCreate(sAPP_Task_BuzzerHandler,"BuzzerHandler",4096,NULL,1,NULL);
-    //ADC采样读取电池电压电流任务
-    xTaskCreate(sAPP_Task_ReadADC,"ReadADC",1024,NULL,1,NULL);
+    
     
 
+    //*******************************创建任务**************************************
+    //2.4GHz接收到数据处理任务,栈分配2KBytes,优先级为3
+    xTaskCreate(sAPP_Task_2D4GHzReciedDataH ,"2D4GHzISRDataH"  ,2048,NULL,3,NULL);
+    //刷新屏幕任务
+    xTaskCreate(sAPP_Task_UpdateScreen      ,"UpdateScreen"    ,4096,NULL,1,NULL);
+    //按键状态机处理任务
+    xTaskCreate(sAPP_Task_BtnHandler        ,"BtnHandler"      ,2048,NULL,1,NULL);
+    //BUZZER处理任务
+    xTaskCreate(sAPP_Task_BuzzerHandler     ,"BuzzerHandler"   ,4096,NULL,1,NULL);
+    //ADC采样读取电池电压电流任务
+    xTaskCreate(sAPP_Task_ReadADC           ,"ReadADC"         ,4096,NULL,1,NULL);
+    
+    //首先同步一次时间
+    sAPP_Task_TIM_SyncTimeByNTP(NULL);
+    //同步时间定时器 24H一次
+    SyncTimer = xTimerCreate("SyncTimer", pdMS_TO_TICKS(3600 * 24 * 1000), pdTRUE, (void *)0, sAPP_Task_TIM_SyncTimeByNTP);
+    xTimerStart(SyncTimer, 0);  
 
 
+    
 
     //! 千万不要调用vTaskStartScheduler();
 }
