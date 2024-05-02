@@ -40,22 +40,23 @@ static void ShowHomePage(){
     //显示电量
     uint8_t bat_x = 101;
     static char bat_percent_str[10] = {0};
-    if(sAPP_Func_GetBatPercent() == 100){
+    uint8_t bat_percent = sAPP_ADC_GetBatPercent();
+    if(bat_percent == 100){
         snprintf(bat_percent_str,sizeof(bat_percent_str),"100");
     }
-    else if(sAPP_Func_GetBatPercent() != 255){
-        snprintf(bat_percent_str,sizeof(bat_percent_str),"%d%%",sAPP_Func_GetBatPercent());
+    else if(bat_percent != 255){
+        snprintf(bat_percent_str,sizeof(bat_percent_str),"%d%%",bat_percent);
     }
-    if(sAPP_Func_GetBatPercent() < 25){
+    if(bat_percent < 25){
         sG2D_Draw8x8Icon(bat_x + 0,1,sAPP_Font_8x8Icon_Bat0);
     }
-    else if(sAPP_Func_GetBatPercent() < 50){
+    else if(bat_percent < 50){
         sG2D_Draw8x8Icon(bat_x + 0,1,sAPP_Font_8x8Icon_Bat1);
     }
-    else if(sAPP_Func_GetBatPercent() < 75){
+    else if(bat_percent < 75){
         sG2D_Draw8x8Icon(bat_x + 0,1,sAPP_Font_8x8Icon_Bat2);
     }
-    else if(sAPP_Func_GetBatPercent() <= 100){
+    else if(bat_percent <= 100){
         sG2D_Draw8x8Icon(bat_x + 0,1,sAPP_Font_8x8Icon_Bat3);
     }
     sG2D_WriteString(bat_x + 9,1,bat_percent_str);
@@ -281,7 +282,7 @@ void SettingsPage_Volume_Enter(){
 }
 
 void SettingsPage_WS2812_Enter(){
-    cotMenu_Bind(SettingsPage_WS2812_Item,GET_MENU_NUM(SettingsPage_WS2812_Item),ShowSettingsMenuSleepPage);
+    cotMenu_Bind(SettingsPage_WS2812_Item,GET_MENU_NUM(SettingsPage_WS2812_Item),ShowSettingsMenuWS2812Page);
 }
 
 void SettingsPage_WiFi_Enter(){
@@ -426,70 +427,70 @@ void Show2D4GHzInfoMenu(MenuShow_t *ptS){
     //第一个item的上边框线
     sG2D_DrawHLine(0,128,y_offset - 2,1);
 
-    // //获取数据
-    // //STATE
-    // static char state[20] = "";
-    // ptS->pItemsExData[0] = (void*)state;
+    //获取数据
+    //STATE
+    static char state[20] = "";
+    ptS->pItemsExData[0] = (void*)state;
     
-    // //RF CH
-    // char rf_ch[20] = "";
-    // //snprintf(rf_ch,20,"       %uMHz",si24r1_conf.rf_ch + 2400);
-    // ptS->pItemsExData[1] = (void*)rf_ch;
-    // //RxPWR
-    // char rf_pwr[20] = "";
-    // if(si24r1_conf.rf_pwr == RF_PWR_7DBM){
-    //     snprintf(rf_pwr,20,"         +7dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_4DBM){
-    //     snprintf(rf_pwr,20,"         +4dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_3DBM){
-    //     snprintf(rf_pwr,20,"         +3dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_1DBM){
-    //     snprintf(rf_pwr,20,"         +1dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_0DBM){
-    //     snprintf(rf_pwr,20,"         +0dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_N4DBM){
-    //     snprintf(rf_pwr,20,"         -4dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_N6DBM){
-    //     snprintf(rf_pwr,20,"         -6dBm");
-    // }
-    // else if(si24r1_conf.rf_pwr == RF_PWR_N12DBM){
-    //     snprintf(rf_pwr,20,"        -12dBm");
-    // }
-    // ptS->pItemsExData[2] = (void*)rf_pwr;
-    // //Rx P0
-    // char rx_p0[20] = "";
-    // snprintf(rx_p0,20,"  0x%0llX",si24r1_conf.addr.rx_addr_p0);
-    // ptS->pItemsExData[3] = (void*)rx_p0;
-    // //Rx P1
-    // char rx_p1[20] = "";
-    // snprintf(rx_p1,20,"  0x%0llX",si24r1_conf.addr.rx_addr_p1);
-    // ptS->pItemsExData[4] = (void*)rx_p1;
-    // //Rx P2
-    // char rx_p2[20] = "";
-    // snprintf(rx_p2,20,"          0x%0X",si24r1_conf.addr.rx_addr_p2);
-    // ptS->pItemsExData[5] = (void*)rx_p2;
-    // //Rx P3
-    // char rx_p3[20] = "";
-    // snprintf(rx_p3,20,"          0x%0X",si24r1_conf.addr.rx_addr_p3);
-    // ptS->pItemsExData[6] = (void*)rx_p3;
-    // //Rx P4
-    // char rx_p4[20] = "";
-    // snprintf(rx_p4,20,"          0x%0X",si24r1_conf.addr.rx_addr_p4);
-    // ptS->pItemsExData[7] = (void*)rx_p4;
-    // //Rx P5
-    // char rx_p5[20] = "";
-    // snprintf(rx_p5,20,"          0x%0X",si24r1_conf.addr.rx_addr_p5);
-    // ptS->pItemsExData[8] = (void*)rx_p5;
-    // //Tx P
-    // char tx_p[20] = "";
-    // snprintf(tx_p,20,"  0x%0llX",si24r1_conf.addr.tx_addr);
-    // ptS->pItemsExData[9] = (void*)tx_p;
+    //RF CH
+    char rf_ch[20] = "";
+    snprintf(rf_ch,20,"       %uMHz",g_si24r1_conf.rf_ch + 2400);
+    ptS->pItemsExData[1] = (void*)rf_ch;
+    //RxPWR
+    char rf_pwr[20] = "";
+    if(g_si24r1_conf.rf_pwr == RF_PWR_7DBM){
+        snprintf(rf_pwr,20,"         +7dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_4DBM){
+        snprintf(rf_pwr,20,"         +4dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_3DBM){
+        snprintf(rf_pwr,20,"         +3dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_1DBM){
+        snprintf(rf_pwr,20,"         +1dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_0DBM){
+        snprintf(rf_pwr,20,"         +0dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_N4DBM){
+        snprintf(rf_pwr,20,"         -4dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_N6DBM){
+        snprintf(rf_pwr,20,"         -6dBm");
+    }
+    else if(g_si24r1_conf.rf_pwr == RF_PWR_N12DBM){
+        snprintf(rf_pwr,20,"        -12dBm");
+    }
+    ptS->pItemsExData[2] = (void*)rf_pwr;
+    //Rx P0
+    char rx_p0[20] = "";
+    snprintf(rx_p0,20,"  0x%0llX",g_si24r1_conf.addr.rx_addr_p0);
+    ptS->pItemsExData[3] = (void*)rx_p0;
+    //Rx P1
+    char rx_p1[20] = "";
+    snprintf(rx_p1,20,"  0x%0llX",g_si24r1_conf.addr.rx_addr_p1);
+    ptS->pItemsExData[4] = (void*)rx_p1;
+    //Rx P2
+    char rx_p2[20] = "";
+    snprintf(rx_p2,20,"          0x%0X",g_si24r1_conf.addr.rx_addr_p2);
+    ptS->pItemsExData[5] = (void*)rx_p2;
+    //Rx P3
+    char rx_p3[20] = "";
+    snprintf(rx_p3,20,"          0x%0X",g_si24r1_conf.addr.rx_addr_p3);
+    ptS->pItemsExData[6] = (void*)rx_p3;
+    //Rx P4
+    char rx_p4[20] = "";
+    snprintf(rx_p4,20,"          0x%0X",g_si24r1_conf.addr.rx_addr_p4);
+    ptS->pItemsExData[7] = (void*)rx_p4;
+    //Rx P5
+    char rx_p5[20] = "";
+    snprintf(rx_p5,20,"          0x%0X",g_si24r1_conf.addr.rx_addr_p5);
+    ptS->pItemsExData[8] = (void*)rx_p5;
+    //Tx P
+    char tx_p[20] = "";
+    snprintf(tx_p,20,"  0x%0llX",g_si24r1_conf.addr.tx_addr);
+    ptS->pItemsExData[9] = (void*)tx_p;
 
     //绘制可滚动区
     for(menusize_t i = ptS->showBaseItem + 0; i < ptS->showBaseItem + maxItems && i < ptS->itemsNum; i++){
@@ -566,7 +567,7 @@ void ShowSettingsMenu(MenuShow_t *ptS){
 }
 
 
-uint8_t brightness = 100;
+
 sAPP_Btns_Event_t btn_event;
 
 static void DrawMidBar(uint8_t bar_x,uint8_t bar_y,uint8_t bar_width,float percent){
@@ -594,18 +595,21 @@ void ShowSettingsMenuBrightPage(MenuShow_t *ptS){
     if(xQueueReceive(g_sgbd2_ev_mq, &btn_event, 0) == pdTRUE){
         if(btn_event.btn_id == BTN_UP_ID){
             //限幅
-            brightness < 100? brightness += 5 : brightness = 100;
+            g_oled_bl_percent < 100? g_oled_bl_percent += 5 : g_oled_bl_percent = 100;
         }else if(btn_event.btn_id == BTN_DOWN_ID){
-            brightness > 0  ? brightness -= 5 : brightness = 0;
+            g_oled_bl_percent > 0  ? g_oled_bl_percent -= 5 : g_oled_bl_percent = 0;
         }
         //设置亮度
-        sDRV_GenOLED_SetBrightness(brightness);
+        nvs.begin("wws_reci");
+        nvs.putInt(SAPP_NVS_KEY_OLED_BL_PERCENT,g_oled_bl_percent);
+        nvs.end();
+        sDRV_GenOLED_SetBrightness(g_oled_bl_percent);
     }
     //画一个进度条
     uint8_t bar_x = 40; uint8_t bar_y = 42; uint8_t bar_width = 50;
-    DrawMidBar(bar_x,bar_y,bar_width,brightness);
+    DrawMidBar(bar_x,bar_y,bar_width,g_oled_bl_percent);
     //在进度条右侧加一个数据显示
-    sG2D_WriteNumber(bar_x + bar_width + 5,bar_y,brightness);
+    sG2D_WriteNumber(bar_x + bar_width + 5,bar_y,g_oled_bl_percent);
     sG2D_WriteString(bar_x + bar_width + 25,bar_y,"%");
 }
 
@@ -620,6 +624,33 @@ void ShowSettingsMenuSleepTimePage(MenuShow_t *ptS){
     //显示背景图
     sG2D_SetAllGRAM(0);
     //sG2D_DrawScreenByImg(sAPP_Font_Img_ScrrenSleepTime);
+}
+
+void ShowSettingsMenuWS2812Page(MenuShow_t *ptS){
+    sG2D_SetAllGRAM(0);
+    sG2D_DrawScreenByImg(sAPP_Font_Img_LEDBrightnessAdj);
+
+    //如果队列有数据(按键按下)注意这里是非阻塞读取
+    if(xQueueReceive(g_sgbd2_ev_mq, &btn_event, 0) == pdTRUE){
+        if(btn_event.btn_id == BTN_UP_ID){
+            //限幅
+            g_ws2812_bl_percent < 100? g_ws2812_bl_percent += 5 : g_ws2812_bl_percent = 100;
+        }else if(btn_event.btn_id == BTN_DOWN_ID){
+            g_ws2812_bl_percent > 0  ? g_ws2812_bl_percent -= 5 : g_ws2812_bl_percent = 0;
+        }
+        //首先把数据保存下来
+        nvs.begin("wws_reci");
+        nvs.putInt(SAPP_NVS_KEY_WS2812_BL_PERCENT,g_ws2812_bl_percent);
+        nvs.end();
+        //设置亮度
+        sAPP_WS2812_SetBrightness(g_ws2812_bl_percent);
+    }
+    //画一个进度条
+    uint8_t bar_x = 40; uint8_t bar_y = 42; uint8_t bar_width = 50;
+    DrawMidBar(bar_x,bar_y,bar_width,g_ws2812_bl_percent);
+    //在进度条右侧加一个数据显示
+    sG2D_WriteNumber(bar_x + bar_width + 5,bar_y,g_ws2812_bl_percent);
+    sG2D_WriteString(bar_x + bar_width + 25,bar_y,"%");
 }
 
 void ShowSettingsMenuWiFiPage(MenuShow_t *ptS){

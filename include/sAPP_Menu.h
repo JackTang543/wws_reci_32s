@@ -12,6 +12,7 @@ void Show2D4GHzInfoMenu(MenuShow_t *ptS);
 void ShowSettingsMenu(MenuShow_t *ptS);
 void ShowSettingsMenuBrightPage(MenuShow_t *ptS);
 void ShowSettingsMenuSleepPage(MenuShow_t *ptS);
+void ShowSettingsMenuWS2812Page(MenuShow_t *ptS);
 void ShowSettingsMenuWiFiPage(MenuShow_t *ptS);
 void ShowSettingsMenuSyncNTPPage(MenuShow_t *ptS);
 

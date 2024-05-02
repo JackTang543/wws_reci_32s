@@ -16,6 +16,8 @@ void sAPP_Task_2D4GHzReciedDataH(void* pvPara){
     for(;;){
         //如果队列有数据
         if(xQueueReceive(g_si24r1_data_queue, &si24r1_data, portMAX_DELAY) == pdPASS) {
+            //让灯闪一下
+            sAPP_WS2812_StartSinglePulse();
             //然后把数据变成特定的格式
             memcpy(&g_data_packet_p1,&si24r1_data,sizeof(data_packet_t));
 
@@ -35,9 +37,7 @@ void sAPP_Task_UpdateScreen(void* pvPara){
         sAPP_Menu_Handler();
         //更新屏幕
         sG2D_UpdateScreen();
-        // //清空显存
-        // sG2D_SetAllGRAM(0);
-        vTaskDelay(20 / portTICK_PERIOD_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
     }
 }
 
@@ -49,21 +49,36 @@ void sAPP_Task_BtnHandler(void* pvPara){
     }
 }
 
-//! 用于cot menu
+//蜂鸣器处理
 void sAPP_Task_BuzzerHandler(void* pvPara){
     for(;;){
-        //sDRV_BUZZER_Handler();
-        
-        vTaskDelay(50 / portTICK_PERIOD_MS);
+        sDRV_BUZZER_Handler();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 
 //读取电池电流和电压值
 void sAPP_Task_ReadADC(void* pvPara){
     for(;;){
-        bat_mv = sAPP_Func_GetVoltMV();
-        bat_ma = sAPP_Func_GetCurrMA();
+        bat_mv = sAPP_ADC_GetVoltMV();
+        bat_ma = sAPP_ADC_GetCurrMA();
         vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+
+//WS2812处理任务
+void sAPP_Task_WS2812Handler(void* pvPara){
+    for(;;){
+        sAPP_WS2812_Handler();
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
+//串口指令处理任务
+void sAPP_Task_UARTHandler(void* pvPara){
+    for(;;){
+        sAPP_UART_Handler();
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 

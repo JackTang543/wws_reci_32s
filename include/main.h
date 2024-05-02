@@ -1,31 +1,29 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-
-
 #include <Arduino.h>
-
-#include "sAPP_Func.h"
-
-#include "sGraphic2D.h"
-
-#include "sAPP_Task.h"
-
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiUdp.h>
 #include <WiFi.h>
 
-#include "sBSP_SPI.h"
-
 #include "sAPP_Task.h"
-#include "sDRV_Buzzer.h"
+#include "sAPP_Func.h"
 
+#include "sGraphic2D.h"
 #include "cot_menu.h"
+
 #include "sAPP_Btns.h"
 #include "sAPP_Menu.h"
 #include "sAPP_2D4GHz.h"
 #include "sAPP_NVS.h"
+#include "sAPP_WS2812.h"
+#include "sAPP_ADC.h"
+#include "sAPP_UART.h"
+
+#include "sDRV_Buzzer.h"
+
+
 
 typedef struct{
     float aht10_humi;
@@ -52,6 +50,8 @@ extern QueueHandle_t btn_ev_data_queue;
 //电池电压电流
 extern float bat_mv;
 extern float bat_ma;
+extern uint8_t g_oled_bl_percent;
+extern uint8_t g_ws2812_bl_percent;
 
 extern Si24R1_Data_t si24r1_data_p1;
 

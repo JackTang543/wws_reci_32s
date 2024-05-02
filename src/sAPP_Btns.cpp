@@ -6,8 +6,12 @@
 //By Sightseer.
 //TIME:2024.05.01 五一快乐
 
+//用于告诉sAPP_Menu发生了什么事件
 sAPP_Btns_Event_t btns_event;
+//是否处在选中模式,如果处在选中模式,则会发送消息给items
 uint8_t is_selected = 0;
+
+
 
 /**
  * @brief 按键事件回调,sGBD2检测到按键事件会自动调用
@@ -18,33 +22,32 @@ uint8_t is_selected = 0;
 void sAPP_Btns_EventCb(uint8_t btn_id,ev_flag_t btn_ev){
     //非阻塞式读取二值信号量
     if(xSemaphoreTake(g_sapp_menu_item_selected_sem,0) == pdTRUE){
+        Serial.println("selected");
         is_selected = 1;
-        //Serial.printf("已选中!\n");
     }
     if(xSemaphoreTake(g_sapp_menu_item_unselect_sem,0) == pdTRUE){
+        Serial.println("unselect");
         is_selected = 0;
-        //Serial.printf("退出选中!\n");
     }
+
     //缓存事件
     btns_event.btn_id = btn_id;
     btns_event.btn_ev = btn_ev;
 
-    //按键UP
+    //按键:向上
     if(btn_id == BTN_UP_ID){
         //按下松手
         if(btn_ev == ev_rlsd){
-            //sDRV_BUZZER_SetPulseTime_ms(300,100);
+            //让蜂鸣器响一下
+            sDRV_BUZZER_StartSinglePulse();
 
             //如果不处在选中模式,才给cotMenu一个操作
             if(!is_selected){
                 cotMenu_SelectPrevious(1);
             }else{
                 //处在选中模式,发送消息给items
-                //Serial.printf("up:send mq\n");
                 xQueueSend(g_sgbd2_ev_mq,&btns_event,0);
             }
-            
-            
         }
         //长按按下
         else if(btn_ev == ev_lp){
@@ -55,20 +58,17 @@ void sAPP_Btns_EventCb(uint8_t btn_id,ev_flag_t btn_ev){
             if(!is_selected){
                 cotMenu_SelectPrevious(1);
             }else{
-                //处在选中模式,发送消息给items
-                //Serial.printf("up:send mq\n");
                 xQueueSend(g_sgbd2_ev_mq,&btns_event,0);
             }
         }
     }
+    //按键:向下
     else if(btn_id == BTN_DOWN_ID){
         if(btn_ev == ev_rlsd){
-            //sDRV_BUZZER_SetPulseTime_ms(300,100);
-
+            sDRV_BUZZER_StartSinglePulse();
             if(!is_selected){
                 cotMenu_SelectNext(1);
             }else{
-                //Serial.printf("down:send mq\n");
                 xQueueSend(g_sgbd2_ev_mq,&btns_event,0);
             }
             
@@ -80,28 +80,36 @@ void sAPP_Btns_EventCb(uint8_t btn_id,ev_flag_t btn_ev){
             if(!is_selected){
                 cotMenu_SelectNext(1);
             }else{
-                //Serial.printf("down:send mq\n");
                 xQueueSend(g_sgbd2_ev_mq,&btns_event,0);
             }
         }
     }
+    //按键:确定
     else if(btn_id == BTN_ENTER_ID){
         if(btn_ev == ev_rlsd){
+            
             if(!is_selected){
-                cotMenu_Enter();
+                if(cotMenu_Enter() == 0){
+                    sDRV_BUZZER_StartSinglePulse();
+                }else{
+                    Serial.printf("cotMenu_Enter error\n");
+                }
             }else{
-                //Serial.printf("down:send mq\n");
+                sDRV_BUZZER_StartSinglePulse();
                 xQueueSend(g_sgbd2_ev_mq,&btns_event,0);
             }
-            
         }
         else if(btn_ev == ev_lp){
 
         }
     }
+    //按键:返回
     else if(btn_id == BTN_BACK_ID){
         if(btn_ev == ev_rlsd){
-            cotMenu_Exit(1);
+            if(cotMenu_Exit(1) == 0){
+                //操作有效才响一下
+                sDRV_BUZZER_StartSinglePulse();
+            }
             
         }
         else if(btn_ev == ev_lp){

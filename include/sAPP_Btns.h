@@ -6,15 +6,18 @@
 #include "sGenBtnDrv2.h"
 #include "main.h"
 
+//按键PIN
 #define BTN_UP_PIN     36
 #define BTN_DOWN_PIN   33
 #define BTN_ENTER_PIN  39
 #define BTN_BACK_PIN   32
 
+//按键ID
 #define BTN_UP_ID      0
 #define BTN_DOWN_ID    1
 #define BTN_ENTER_ID   2
 #define BTN_BACK_ID    3
+
 
 typedef struct{
     uint8_t   btn_id;
