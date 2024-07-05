@@ -9,6 +9,8 @@ uint8_t GRAM[128][8];
 extern sCGRAM_Char_t SymbolFont[];
 extern sCGRAM_Char_t CharFont[];
 
+uint8_t is_oled_show = 1;
+
 
 //打点
 void sG2D_SetDot(uint8_t x, uint8_t y, uint8_t dot_en){
@@ -180,7 +182,10 @@ void sG2D_SetAllGRAM(uint8_t px_en){
             sG2D_SetDot(x,y,px_en);
         }
     }
-    
+}
+
+void sG2D_SetOLEDShow(uint8_t en){
+    is_oled_show = en;
 }
 
 void sG2D_UpdateScreen(){
@@ -188,7 +193,9 @@ void sG2D_UpdateScreen(){
     //fps_ts_curr = HAL_GetTick();
     fps_ts_curr = millis();
     fps_val = 1000 / (fps_ts_curr - fps_ts_last);
-    
+
+
+    sDRV_GenOLED_SetShowEN(is_oled_show);
     
     //sG2D_DrawRectangle(fps_x - 1,fps_y - 1 ,128,64,0);
     //sG2D_ShowFPS();

@@ -12,7 +12,7 @@
 
 
 #define CE_PIN     19
-#define IRQ_PIN    16
+#define IRQ_PIN    4
 
 
 

@@ -5,10 +5,10 @@
 
 
 
-#define LED_PIN         21      //定义使用的GPIO引脚
-#define LEDC_CHANNEL    0       //选择PWM通道0
-#define LEDC_FREQUENCY  1000    //默认PWM频率为1000Hz
-#define LEDC_RESOLUTION 8       //分辨率为8位
+#define BUZZER_PIN        21      //定义使用的GPIO引脚
+#define BUZZER_CHANNEL    0       //选择PWM通道0
+#define BUZZER_FREQUENCY  1000    //默认PWM频率为1000Hz
+#define BUZZER_RESOLUTION 8       //分辨率为8位
 
 
 
@@ -46,18 +46,6 @@ void sDRV_BUZZER_SetPulseTime_ms(uint32_t on_time, uint32_t period_time);
 void sDRV_BUZZER_StartSinglePulse();
 
 void sDRV_BUZZER_Handler();
-
-
-
-
-// void sDRV_BUZZER_SetMode(buzzer_mode_t buzzer_mode);
-// void sDRV_BUZZER_SetVolume(uint8_t volume_percent);
-// void sDRV_BUZZER_StartSinglePulse();
-// void sDRV_BUZZER_SetPulseTime_ms(uint32_t on_time, uint32_t off_time);
-// void sDRV_BUZZER_SetBlinkTime_ms(uint16_t time);
-// void sDRV_BUZZER_Handler();
-
-
 
 
 

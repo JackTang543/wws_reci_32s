@@ -1,10 +1,4 @@
 #include "sAPP_Func.h"
-#include "sAPP_Task.h"
-
-
-
-
-
 
 
 
@@ -27,13 +21,6 @@ String dataPacketToJsonString(const data_packet_t* packet) {
     return jsonString;
 }
 
-
-void sAPP_Func_InitOLED(){
-    sDRV_GenOLED_Init();
-}
-
-
-#include "time.h"
 
 void sAPP_Func_RTC_Get12HTime(char* str){
     struct tm timeinfo;
@@ -70,8 +57,10 @@ void sAPP_Func_RTC_Init(){
     timeinfo.tm_hour = 19;          // 时
     timeinfo.tm_min = 30;           // 分
     timeinfo.tm_sec = 0;            // 秒
+    //做一个时间戳
     time_t t = mktime(&timeinfo);
     timeval now = { .tv_sec = t };
+    //用时间戳设置时间
     settimeofday(&now, NULL);
 }
 

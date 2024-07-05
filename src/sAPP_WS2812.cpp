@@ -17,7 +17,6 @@ static float gamma_correction(float percent_brightness) {
     return pwm_duty_cycle;
 }
 
-
 void sAPP_WS2812_Init(){
     ws2812.begin();
     ws2812.setBrightness(0);

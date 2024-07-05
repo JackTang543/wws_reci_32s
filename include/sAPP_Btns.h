@@ -7,10 +7,10 @@
 #include "main.h"
 
 //按键PIN
-#define BTN_UP_PIN     36
+#define BTN_UP_PIN     39
 #define BTN_DOWN_PIN   33
-#define BTN_ENTER_PIN  39
-#define BTN_BACK_PIN   32
+#define BTN_ENTER_PIN  36
+#define BTN_BACK_PIN   32 
 
 //按键ID
 #define BTN_UP_ID      0

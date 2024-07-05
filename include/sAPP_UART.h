@@ -5,7 +5,6 @@
 #include "main.h"
 
 
-
 void sAPP_UART_Init();
 void sAPP_UART_Handler();
 

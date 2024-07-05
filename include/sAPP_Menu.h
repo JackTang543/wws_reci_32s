@@ -12,9 +12,11 @@ void Show2D4GHzInfoMenu(MenuShow_t *ptS);
 void ShowSettingsMenu(MenuShow_t *ptS);
 void ShowSettingsMenuBrightPage(MenuShow_t *ptS);
 void ShowSettingsMenuSleepPage(MenuShow_t *ptS);
+void ShowSettingsMenuBuzzerVolumePage(MenuShow_t *ptS);
 void ShowSettingsMenuWS2812Page(MenuShow_t *ptS);
 void ShowSettingsMenuWiFiPage(MenuShow_t *ptS);
 void ShowSettingsMenuSyncNTPPage(MenuShow_t *ptS);
+void ShowSettingMenuBatInfoPage(MenuShow_t *ptS);
 
 void TwoD4GHzInfoPage_Enter();
 void WiFiInfoPage_Enter();
@@ -25,6 +27,7 @@ void SettingsPage_Volume_Enter();
 void SettingsPage_WS2812_Enter();
 void SettingsPage_WiFi_Enter();
 void SettingsPage_NTP_Enter();
+void SettingsPage_BatInfo_Enter();
 
 void sAPP_Menu_Handler();
 

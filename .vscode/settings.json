@@ -13,5 +13,12 @@
         "initializer_list": "cpp",
         "list": "cpp",
         "malloc.h": "c"
+    },
+    "workbench.colorCustomizations": {
+        "editor.lineHighlightBackground": "#1073cf2d",
+        "editor.lineHighlightBorder": "#9fced11f",
+        "activityBar.background": "#161616",
+        "titleBar.activeBackground": "#1D1D1D",
+        "titleBar.activeForeground": "#F9F9F9"
     }
 }

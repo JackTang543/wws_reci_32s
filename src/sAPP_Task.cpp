@@ -18,8 +18,16 @@ void sAPP_Task_2D4GHzReciedDataH(void* pvPara){
         if(xQueueReceive(g_si24r1_data_queue, &si24r1_data, portMAX_DELAY) == pdPASS) {
             //让灯闪一下
             sAPP_WS2812_StartSinglePulse();
-            //然后把数据变成特定的格式
-            memcpy(&g_data_packet_p1,&si24r1_data,sizeof(data_packet_t));
+            //然后把数据变成特定的格式,直接给值为了不复制我自己添加的字段
+            memcpy(&g_data_packet_p1,&si24r1_data,26);
+            g_data_packet_p1.rssi = si24r1_data.rssi;
+            g_data_packet_p1.ppp = si24r1_data.ppp; 
+            //获取时间戳
+            time_t now = time(NULL);
+            g_data_packet_p1.timestamp = now;
+            //把数据放入临时队列
+            xQueueSend(g_recied_data_temp_queue,&g_data_packet_p1,0);
+            //Serial.printf("vbat_mv:%.2f\n",g_data_packet_p1.vbat);
 
             // Serial.printf("AHT10 HUMI: %.1f %%RH,AHT10 TEMP: %.1f degC\n",data_packet_p1.aht10_humi,data_packet_p1.aht10_temp);
             // Serial.printf("BMP280 PRESS: %.3f HPa,BMP280 TEMP: %.2f degC\n",data_packet_p1.bmp280_pres / 100,data_packet_p1.bmp280_temp);
@@ -88,5 +96,9 @@ void sAPP_Task_TIM_SyncTimeByNTP(TimerHandle_t xTimer){
         //GMT+8 中国北京
         configTime(3600 * 8,0,"ntp.ntsc.ac.cn");
     }
+}
+
+void sAPP_Task_TIM_ScreenSleep(TimerHandle_t xTimer){
+    sG2D_SetOLEDShow(0);
 }
 

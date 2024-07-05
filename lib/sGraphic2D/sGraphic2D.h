@@ -26,6 +26,7 @@ void sG2D_DrawHLine(uint8_t x0, uint8_t x1,uint8_t y, uint8_t dot_en);
 void sG2D_DrawTriangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t dot_en);
 void sG2D_DrawRectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t is_fill);
 void sG2D_SetAllGRAM(uint8_t px_en);
+void sG2D_SetOLEDShow(uint8_t en);
 void sG2D_UpdateScreen();
 
 

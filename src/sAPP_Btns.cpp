@@ -30,6 +30,14 @@ void sAPP_Btns_EventCb(uint8_t btn_id,ev_flag_t btn_ev){
         is_selected = 0;
     }
 
+    //有任何按键事件都会导致熄屏定时器重置,并重新启动OLED使能
+    sG2D_SetOLEDShow(1);
+    //如果大于200s说明永远不息屏
+    if(g_screen_time_s < 200){
+        xTimerReset(g_screen_sleep_timer,0);
+    }
+    
+
     //缓存事件
     btns_event.btn_id = btn_id;
     btns_event.btn_ev = btn_ev;

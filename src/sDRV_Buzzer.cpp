@@ -1,21 +1,22 @@
 #include "sDRV_Buzzer.h"
- 
+
 
 buzzer_t buzzer;
 
 void sDRV_BUZZER_Init(){
-    ledcSetup(LEDC_CHANNEL,LEDC_FREQUENCY,LEDC_RESOLUTION);
+    ledcSetup(BUZZER_CHANNEL,BUZZER_FREQUENCY,BUZZER_RESOLUTION);
     //将PWM信号绑定到GPIO
-    ledcAttachPin(LED_PIN,LEDC_CHANNEL);
-    ledcWrite(LEDC_CHANNEL,0);
+    ledcAttachPin(BUZZER_PIN,BUZZER_CHANNEL);
+    //设置PWM占空比0
+    ledcWrite(BUZZER_CHANNEL,0);
 }
 
 void sDRV_BUZZER_SetDuty(int8_t duty){
-    ledcWrite(LEDC_CHANNEL,duty);
+    ledcWrite(BUZZER_CHANNEL,duty);
 }
 
 void sDRV_BUZZER_SetFreq(uint16_t freq){
-    ledcWriteTone(LEDC_CHANNEL,freq);
+    ledcWriteTone(BUZZER_CHANNEL,freq);
 }
 
 void sDRV_BUZZER_SetMode(buzzer_mode_t buzzer_mode){
@@ -28,6 +29,7 @@ void sDRV_BUZZER_SetVolume(uint8_t volume_percent){
     if(volume_percent > 90){
         volume_percent = 90;
     }
+    Serial.printf("volume_percent:%d\n",volume_percent);
     buzzer.volume = volume_percent;
 }
 
@@ -49,7 +51,7 @@ void sDRV_BUZZER_SetPulseTime_ms(uint32_t on_time, uint32_t period_time){
 void sDRV_BUZZER_StartSinglePulse(){
     if(buzzer.mode == BUZZER_MODE_PULSE_SINGLE){
         //首先设置不输出
-        ledcWrite(LEDC_CHANNEL,0);
+        ledcWrite(BUZZER_CHANNEL,0);
         buzzer.status = BUZZER_STATUS_OFF;
         //清空单次脉冲触发标志位
         buzzer.single_pulse_trig = 0;

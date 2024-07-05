@@ -288,6 +288,8 @@ int8_t sDRV_GenOLED_Init(){
         //设置默认电平
         setCS(1);
         setDC(1);
+        pinMode(27,OUTPUT);
+        digitalWrite(27,HIGH);
         
         #else
         if(sBSP_I2C1_Init(400000) != 0){

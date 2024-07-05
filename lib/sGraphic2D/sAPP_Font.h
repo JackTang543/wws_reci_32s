@@ -38,6 +38,7 @@ extern const unsigned char sAPP_Font_Img_WiFiDisconnect[];
 extern const unsigned char sAPP_Font_Img_SyncNTPTime[];
 extern const unsigned char sAPP_Font_Img_WiFiConnecting[];
 extern const unsigned char sAPP_Font_Img_LEDBrightnessAdj[];
+extern const unsigned char sAPP_Font_Img_BuzzerVolumeAdj[];
 
 
 /* 

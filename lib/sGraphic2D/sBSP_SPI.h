@@ -14,8 +14,8 @@
 
 //SPI2 -> Si24R1
 #define SPI2_SCL_PIN   5
-#define SPI2_MISO_PIN  17
-#define SPI2_MOSI_PIN  4
+#define SPI2_MISO_PIN  16
+#define SPI2_MOSI_PIN  17
 #define SPI2_CS_PIN    18
 #define SPI2_FREQ      10000000
 

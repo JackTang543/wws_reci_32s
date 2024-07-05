@@ -11,6 +11,8 @@ extern Preferences nvs;
 
 #define SAPP_NVS_KEY_OLED_BL_PERCENT    ((const char*)"oled_bl")
 #define SAPP_NVS_KEY_WS2812_BL_PERCENT  ((const char*)"ws2812_bl")
+#define SAPP_NVS_KEY_OLED_SLEEP_TIME    ((const char*)"oled_t")
+#define SAPP_NVS_KEY_BUZZER_VOLUME      ((const char*)"b_vol")
 
 
 void sAPP_NVS_Init();

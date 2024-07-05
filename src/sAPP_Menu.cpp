@@ -3,9 +3,27 @@
 
 
 
-//todo 基于C++标准库的框架
-
 MainMenuCfg_t menu_cfg = {0};
+
+uint8_t voltageToPercentage(uint16_t voltage) {
+    if (voltage >= 4200) {
+        return 100;
+    } else if (voltage >= 4100) {
+        return 90 + (voltage - 4100) * 10 / 100;
+    } else if (voltage >= 4000) {
+        return 75 + (voltage - 4000) * 15 / 100;
+    } else if (voltage >= 3900) {
+        return 50 + (voltage - 3900) * 25 / 100;
+    } else if (voltage >= 3800) {
+        return 25 + (voltage - 3800) * 25 / 100;
+    } else if (voltage >= 3700) {
+        return 10 + (voltage - 3700) * 15 / 100;
+    } else if (voltage >= 3500) {
+        return (voltage - 3500) * 10 / 200;
+    } else {
+        return 0;
+    }
+}
 
 /**
  * @brief 显示主页
@@ -32,6 +50,8 @@ static void ShowHomePage(){
         
     }
 
+
+
     //显示时间
     char time_str[10] = {0};
     sAPP_Func_RTC_Get12HTime(time_str);
@@ -40,7 +60,8 @@ static void ShowHomePage(){
     //显示电量
     uint8_t bat_x = 101;
     static char bat_percent_str[10] = {0};
-    uint8_t bat_percent = sAPP_ADC_GetBatPercent();
+    //uint8_t bat_percent = sAPP_ADC_GetBatPercent();
+    uint8_t bat_percent = voltageToPercentage(sAPP_ADC_GetVoltMV());
     if(bat_percent == 100){
         snprintf(bat_percent_str,sizeof(bat_percent_str),"100");
     }
@@ -111,14 +132,20 @@ static void ShowHomePage(){
     //把光照从0到100的范围映射到0-30的范围
     uint8_t light_bar_len = map(g_data_packet_p1.temt_mv,0,100,0,30);
     sG2D_DrawHLine(light_str_x + 1,light_str_x + 1 + light_bar_len,light_str_y + 9,1);
+
+    char c[20] = {0};
+
+    //snprintf(c,sizeof(c),"%0.1fmA,%0.1fmV",sAPP_ADC_GetCurrMA(),sAPP_ADC_GetVoltMV()); 
+
+    //sG2D_WriteString(10,54,c);
 }
 
 //显示次要信息页面
 static void ShowViceHomePage(){
-    // sG2D_SetAllGRAM(0);
-    // sG2D_DrawTriangle(1,2,7,5,1,8,1);
-    // sG2D_WriteString(10,2,"VICE PAGE");
-    // sG2D_RevRectArea(0,0,127,10);
+    sG2D_SetAllGRAM(0);
+    sG2D_DrawTriangle(1,2,7,5,1,8,1);
+    sG2D_WriteString(10,2,"VICE PAGE");
+    sG2D_RevRectArea(0,0,127,10);
 }
 
 //显示2.4Ghz信息页面
@@ -126,19 +153,9 @@ static void Show2D4InfoPage(){
     sG2D_DrawScreenByImg(sAPP_Font_Img_2D4GhzInfo);
 }
 
-//显示2.4Ghz设置页面
-static void Show2D4SettingsPage(){
-    sG2D_DrawScreenByImg(sAPP_Font_Img_2D4GhzSettings);
-}
-
 //显示WiFi信息页面
 static void ShowWiFiInfoPage(){
     sG2D_DrawScreenByImg(sAPP_Font_Img_WifiInfo);
-}
-
-//显示WiFi设置页面
-static void ShowWiFiSettingsPage(){
-    sG2D_DrawScreenByImg(sAPP_Font_Img_WiFiSettings);
 }
 
 //显示设置页面
@@ -167,12 +184,10 @@ void load_cb(){
 
 
 MenuList_t tabMenuItems[] = {
-    {"Home Page"        ,ShowViceHomePage, exit_page_cb, ShowHomePage, NULL, NULL},
+    {"Home Page"        ,exit_page_cb, exit_page_cb, ShowHomePage          , NULL, NULL},
     {"2.4Ghz Info Page" ,exit_page_cb, exit_page_cb, TwoD4GHzInfoPage_Enter, NULL, NULL},
-    {"2.4Ghz Settings"  ,exit_page_cb, exit_page_cb, Show2D4SettingsPage, NULL, NULL},
-    {"WiFi Info Page"   ,exit_page_cb, exit_page_cb, WiFiInfoPage_Enter, NULL, NULL},
-    {"WiFi Settings"    ,exit_page_cb, exit_page_cb, ShowWiFiInfoPage, NULL, NULL},
-    {"Other Settings"   ,exit_page_cb, exit_page_cb, SettingsPage_Enter, NULL, NULL}
+    {"WiFi Info Page"   ,exit_page_cb, exit_page_cb, WiFiInfoPage_Enter    , NULL, NULL},
+    {"Other Settings"   ,exit_page_cb, exit_page_cb, SettingsPage_Enter    , NULL, NULL}
 };
 
 //选中Item发送消息给sGBD2
@@ -216,12 +231,13 @@ MenuList_t TwoD4GHzInfoPageItem[] = {
 
 //设置页的内容
 MenuList_t SettingsPageItem[] = {
-    {" > Screen Brightness", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Bright_Enter, NULL, NULL},
-    {" > Screen Sleep", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Sleep_Enter, NULL, NULL},
-    {" > Buzzer Volume", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Volume_Enter, NULL, NULL},
-    {" > WS2812 Brightness", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_WS2812_Enter, NULL, NULL},
-    {" > WiFi Connect", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_WiFi_Enter, NULL, NULL},
-    {" > Sync NTP Time", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_NTP_Enter, NULL, NULL},
+    {" > Screen Brightness", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Bright_Enter , NULL, NULL},
+    {" > Screen Sleep"     , SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Sleep_Enter  , NULL, NULL},
+    {" > Buzzer Volume"    , SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_Volume_Enter , NULL, NULL},
+    {" > WS2812 Brightness", SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_WS2812_Enter , NULL, NULL},
+    {" > WiFi Connect"     , SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_WiFi_Enter   , NULL, NULL},
+    {" > Sync NTP Time"    , SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_NTP_Enter    , NULL, NULL},
+    {" > Battary Info"     , SelectedItem_SendMsg, UnselectItem_SendMsg, SettingsPage_BatInfo_Enter, NULL, NULL},
 };
 
 MenuList_t SettingsPage_Bright_Item[] = {
@@ -246,6 +262,10 @@ MenuList_t SettingsPage_WiFi_Item[] = {
 
 MenuList_t SettingsPage_NTP_Item[] = {
     {"Sync NTP Time:", NULL, NULL, NULL, NULL, NULL},
+};
+
+MenuList_t SettingsPage_BatInfo_Item[] = {
+    {"Battary Info:", NULL, NULL, NULL, NULL, NULL},
 };
 
 
@@ -278,7 +298,7 @@ void SettingsPage_Sleep_Enter(){
 }
 
 void SettingsPage_Volume_Enter(){
-    cotMenu_Bind(SettingsPage_Volume_Item,GET_MENU_NUM(SettingsPage_Volume_Item),ShowSettingsMenuSleepPage);
+    cotMenu_Bind(SettingsPage_Volume_Item,GET_MENU_NUM(SettingsPage_Volume_Item),ShowSettingsMenuBuzzerVolumePage);
 }
 
 void SettingsPage_WS2812_Enter(){
@@ -292,6 +312,11 @@ void SettingsPage_WiFi_Enter(){
 void SettingsPage_NTP_Enter(){
     cotMenu_Bind(SettingsPage_NTP_Item,GET_MENU_NUM(SettingsPage_NTP_Item),ShowSettingsMenuSyncNTPPage);
 }
+
+void SettingsPage_BatInfo_Enter(){
+    cotMenu_Bind(SettingsPage_NTP_Item,GET_MENU_NUM(SettingsPage_NTP_Item),ShowSettingMenuBatInfoPage);
+}
+
 
 
 //显示WiFi信息菜单
@@ -617,14 +642,72 @@ void ShowSettingsMenuSleepPage(MenuShow_t *ptS){
     //显示背景图
     sG2D_SetAllGRAM(0);
     sG2D_DrawScreenByImg(sAPP_Font_Img_ScrrenSleepTime);
+
+    if(xQueueReceive(g_sgbd2_ev_mq, &btn_event, 0) == pdTRUE){
+        if(btn_event.btn_id == BTN_UP_ID){
+            //限幅
+            g_screen_time_s < 200? g_screen_time_s += 5 : g_screen_time_s = 200;
+        }else if(btn_event.btn_id == BTN_DOWN_ID){
+            g_screen_time_s > 5  ? g_screen_time_s -= 5 : g_screen_time_s = 5;
+        }
+        //保存熄屏时间
+        nvs.begin("wws_reci");
+        nvs.putInt(SAPP_NVS_KEY_OLED_SLEEP_TIME,g_screen_time_s);
+        nvs.end();
+        
+        if(g_screen_time_s >= 200){
+            //设置不息屏:关闭定时器
+            xTimerStop(g_screen_sleep_timer,0);
+        }else{
+            //重新设置熄屏定时器
+            xTimerStop(g_screen_sleep_timer,0);
+            xTimerChangePeriod(g_screen_sleep_timer,g_screen_time_s * 1000 / portTICK_PERIOD_MS,0);
+            xTimerStart(g_screen_sleep_timer,0);
+        }
+    }
+    //画一个进度条
+    uint8_t bar_x = 40; uint8_t bar_y = 42; uint8_t bar_width = 50;
+    DrawMidBar(bar_x,bar_y,bar_width,g_screen_time_s / 2);
+    //在进度条右侧加一个数据显示
+    if(g_screen_time_s >= 200){
+        //无限时间
+        sG2D_WriteString(bar_x + bar_width + 5,bar_y,"--");
+    }else{
+        sG2D_WriteNumber(bar_x + bar_width + 5,bar_y,g_screen_time_s);
+    }
+    
+    sG2D_WriteString(bar_x + bar_width + 25,bar_y,"s");
 }
 
 
-void ShowSettingsMenuSleepTimePage(MenuShow_t *ptS){
+void ShowSettingsMenuBuzzerVolumePage(MenuShow_t *ptS){
     //显示背景图
     sG2D_SetAllGRAM(0);
-    //sG2D_DrawScreenByImg(sAPP_Font_Img_ScrrenSleepTime);
+    sG2D_DrawScreenByImg(sAPP_Font_Img_BuzzerVolumeAdj);
+
+    //如果队列有数据(按键按下)注意这里是非阻塞读取
+    if(xQueueReceive(g_sgbd2_ev_mq, &btn_event, 0) == pdTRUE){
+        if(btn_event.btn_id == BTN_UP_ID){
+            //限幅
+            g_buzzer_volume < 100? g_buzzer_volume += 5 : g_buzzer_volume = 100;
+        }else if(btn_event.btn_id == BTN_DOWN_ID){
+            g_buzzer_volume > 0  ? g_buzzer_volume -= 5 : g_buzzer_volume = 0;
+        }
+        //首先把数据保存下来
+        nvs.begin("wws_reci");
+        nvs.putInt(SAPP_NVS_KEY_BUZZER_VOLUME,g_buzzer_volume);
+        nvs.end();
+        //设置音量
+        sDRV_BUZZER_SetVolume(g_buzzer_volume);
+    }
+    //画一个进度条
+    uint8_t bar_x = 42; uint8_t bar_y = 42; uint8_t bar_width = 50;
+    DrawMidBar(bar_x,bar_y,bar_width,g_buzzer_volume);
+    //在进度条右侧加一个数据显示
+    sG2D_WriteNumber(bar_x + bar_width + 5,bar_y,g_buzzer_volume);
+    sG2D_WriteString(bar_x + bar_width + 25,bar_y,"%");
 }
+
 
 void ShowSettingsMenuWS2812Page(MenuShow_t *ptS){
     sG2D_SetAllGRAM(0);
@@ -733,6 +816,27 @@ void ShowSettingsMenuSyncNTPPage(MenuShow_t *ptS){
     }
 }
 
+void ShowSettingMenuBatInfoPage(MenuShow_t *ptS){
+    sG2D_SetAllGRAM(0);
+
+    sG2D_WriteString(10,10,"Battary Info:");
+
+    static char str[20];
+
+    static uint16_t i = 0;
+
+    static float ma = 0,mv = 0;
+
+    ma = sAPP_ADC_GetCurrMA();
+    mv = sAPP_ADC_GetVoltMV();
+
+    sprintf(str,"Curr:%8.1fmA",ma);
+    sG2D_WriteString(10,30,str);
+
+    sprintf(str,"Volt:%8.1fmV",mv);
+    sG2D_WriteString(10,40,str);
+}
+
 // 显示菜单信息的回调
 void ShowMainMenu(MenuShow_t *ptShowInfo){
     sG2D_SetAllGRAM(0);
@@ -745,56 +849,40 @@ void ShowMainMenu(MenuShow_t *ptShowInfo){
     else if(ptShowInfo->selectItem == 1){
         Show2D4InfoPage();
     }
-    //2.4GHz设置
-    else if(ptShowInfo->selectItem == 2){
-        Show2D4SettingsPage();
-    }
     //WiFi信息
-    else if(ptShowInfo->selectItem == 3){
+    else if(ptShowInfo->selectItem == 2){
         ShowWiFiInfoPage();
     }
-    //WiFi设置
-    else if(ptShowInfo->selectItem == 4){
-        ShowWiFiSettingsPage();
-    }
     //其他设置
-    else if(ptShowInfo->selectItem == 5){
+    else if(ptShowInfo->selectItem == 3){
         ShowSettingsPage();
     }
-    // Serial.println(ptShowInfo->pszDesc);
-    // for (int i = 0; i < ptShowInfo->itemsNum; i++) {
-    //     Serial.print(i == ptShowInfo->selectItem ? "> " : "  ");
-    //     Serial.println(ptShowInfo->pszItemsDesc[i]);
-    // }
 }
 
 
 
 void sAPP_Menu_Init(){
-    
+    //菜单配置
+    //菜单名字
     menu_cfg.pszDesc[0] = "Main Menu";
+    //设置进入菜单回调
     menu_cfg.pfnEnterCallFun = enter_cb;
+    //退出菜单回调
     menu_cfg.pfnExitCallFun = exit_page_cb;
+    //加载菜单回调
     menu_cfg.pfnLoadCallFun = ShowHomePage;
+    //无周期调度回调
     menu_cfg.pfnRunCallFun = NULL;    
     
+    //初始化菜单
     cotMenu_Init(&menu_cfg);
+    //设置语言索引0,就是单语言
     cotMenu_SelectLanguage(0);
-
+    //把显示效果(菜单执行需要干什么)绑定到菜单
     cotMenu_Bind(tabMenuItems,GET_MENU_NUM(tabMenuItems),ShowMainMenu);
 
-    
-
-    //cotMenu_Bind(subMenuItems, GET_MENU_NUM(subMenuItems), showMenu);
-
+    //进入主菜单
     cotMenu_MainEnter();
-
-    Serial.println("cot menu init done\n");
-
-    
-
-    
-
 }
 
 
