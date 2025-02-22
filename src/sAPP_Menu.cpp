@@ -25,6 +25,37 @@ uint8_t voltageToPercentage(uint16_t voltage) {
     }
 }
 
+
+/**
+ * @brief 电池检测修正 by黄定 250222
+ * @note 例: 85不会跳转为86,减少电池读取的误差,但充电时85会增加至88
+ * @param ElectricQuantity 读取的电量
+ * @return 修正后的值
+ */
+int Power_Detect_Correct(int ElecQuantity)
+{
+    static int LastELec = 100;
+
+    //电量减少的情况
+    if (ElecQuantity < LastELec)
+    {
+        LastELec = ElecQuantity;
+        return LastELec;
+    }
+    //电量增加1(反复横跳)
+    else if ((ElecQuantity == LastELec + 1) || (ElecQuantity == LastELec + 2))
+    {
+        return LastELec;
+    }
+    //电池增加2以上(充电)
+    else
+    {
+        LastELec = ElecQuantity;
+        return LastELec;
+    }
+
+}
+
 /**
  * @brief 显示主页
  */
@@ -61,7 +92,7 @@ static void ShowHomePage(){
     uint8_t bat_x = 101;
     static char bat_percent_str[10] = {0};
     //uint8_t bat_percent = sAPP_ADC_GetBatPercent();
-    uint8_t bat_percent = voltageToPercentage(sAPP_ADC_GetVoltMV());
+    uint8_t bat_percent = Power_Detect_Correct(voltageToPercentage(sAPP_ADC_GetVoltMV()));
     if(bat_percent == 100){
         snprintf(bat_percent_str,sizeof(bat_percent_str),"100");
     }
